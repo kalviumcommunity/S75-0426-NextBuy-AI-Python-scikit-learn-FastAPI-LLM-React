@@ -1,19 +1,28 @@
+# src/train.py
+
 import pickle
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 
-from src.data_loader import load_data
-from src.data_preprocessing import clean_data, split_data
+from src.data_loader import load_data, split_features_target
 from src.feature_engineering import build_pipeline
-from src.config import DATA_PATH, MODEL_PATH, PIPELINE_PATH, RANDOM_STATE
+from src.config import MODEL_PATH, PIPELINE_PATH, RANDOM_STATE
 
 
 def train():
-    df = load_data(DATA_PATH)
-    df = clean_data(df)
+    df = load_data()
 
-    X_train, X_test, y_train, y_test = split_data(df)
+    # ✅ Proper separation
+    X, y = split_features_target(df)
+
+    # ✅ Train-test split BEFORE fitting
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=RANDOM_STATE
+    )
 
     pipeline = build_pipeline()
+
+    # ✅ Fit ONLY on training data
     X_train_processed = pipeline.fit_transform(X_train)
 
     model = RandomForestClassifier(random_state=RANDOM_STATE)
@@ -27,9 +36,10 @@ def train():
     with open(PIPELINE_PATH, "wb") as f:
         pickle.dump(pipeline, f)
 
-    return model, pipeline, X_test, y_test
+    print("\n✅ Training completed and artifacts saved!")
+
+    return model
 
 
 if __name__ == "__main__":
     train()
-    print("✅ Training completed and artifacts saved!")

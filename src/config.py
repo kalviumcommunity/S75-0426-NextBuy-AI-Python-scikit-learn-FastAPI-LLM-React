@@ -1,9 +1,38 @@
-import os
+# src/config.py
 
-DATA_PATH = os.path.join("data", "sample.csv")
+# ===============================
+# 🎯 TARGET COLUMN
+# ===============================
+TARGET_COLUMN = "target"   # change if your dataset has a different name
 
-MODEL_PATH = os.path.join("models", "model.pkl")
-PIPELINE_PATH = os.path.join("models", "pipeline.pkl")
 
-RANDOM_STATE = 42
-TEST_SIZE = 0.2
+# ===============================
+# 🔢 NUMERICAL FEATURES
+# ===============================
+NUMERICAL_FEATURES = [
+    "feature1",
+    "feature2"
+]
+
+
+# ===============================
+# 🏷️ CATEGORICAL FEATURES
+# ===============================
+CATEGORICAL_FEATURES = [
+    "category1"
+]
+
+
+# ===============================
+# ❌ EXCLUDED COLUMNS
+# ===============================
+EXCLUDED_COLUMNS = [
+    "id",          # unique identifier
+    "timestamp"    # not available during prediction
+]
+
+
+# ===============================
+# ✅ ALL FEATURES (FINAL INPUT)
+# ===============================
+ALL_FEATURES = NUMERICAL_FEATURES + CATEGORICAL_FEATURES
