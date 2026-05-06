@@ -1,120 +1,185 @@
 # 🛒 NextBuy-AI
 
-**NextBuy-AI** is a personalized shopping recommendation system that helps users discover relevant products effortlessly. By combining machine learning with conversational AI, it predicts what users might want next and explains recommendations in a simple, human-friendly way.
+**NextBuy-AI** is a machine learning project built to demonstrate **clean architecture and proper separation of concerns** in ML systems.
+
+This project strictly separates:
+- Data Loading
+- Model Training
+- Inference (Prediction)
+
+The goal is not just building a model — but building a **reliable, reusable, and production-ready ML pipeline**.
 
 ---
 
 ## 🚀 Features
 
-* 🎯 **Personalized Recommendations**
-  Predicts products based on user behavior and preferences
+* 🎯 **Clear Separation of Concerns**
+  Data loading, training, and inference are implemented independently
 
-* 🧠 **ML-Powered Engine**
-  Uses machine learning to identify patterns and suggest relevant items
+* 🧠 **Proper ML Pipeline Design**
+  Preprocessing is fitted only during training and reused during prediction
 
-* 💬 **AI Shopping Assistant**
-  Explains *why* a product is recommended using natural language
+* 💾 **Artifact-Based Workflow**
+  Model and preprocessing pipeline are saved and reused
 
-* ⚡ **Fast & Scalable**
-  Built with a lightweight and efficient architecture
+* ⚡ **Independent Execution**
+  Training and prediction can run separately without dependency
 
 ---
 
 ## 🧱 Tech Stack
 
-* **Backend:** Python, FastAPI
+* **Language:** Python
 * **Machine Learning:** scikit-learn
-* **LLM:** OpenAI / OpenRouter
-* **Frontend:** React
+* **Environment:** venv (Virtual Environment)
 
 ---
 
 ## 📂 Project Structure
 
 ```
-NextBuy-AI/
+project-root/
 │
 ├── data/
-│   ├── raw/
-│   └── processed/
+│   └── sample.csv
 │
-├── models/
+├── models/                  # Saved artifacts (ignored in git)
 │   ├── model.pkl
 │   └── pipeline.pkl
 │
-├── backend/
-│
-├── frontend/
+├── reports/                 # Optional evaluation outputs
 │
 ├── src/
-│   ├── __init__.py
-│   ├── config.py
+│   ├── __init__.py          # Makes src a package
+│   ├── config.py            # Paths & constants
+│   ├── data_loader.py       # ONLY loads raw data
 │   ├── data_preprocessing.py
 │   ├── feature_engineering.py
-│   ├── train.py
+│   ├── train.py             # Training logic (fit happens here)
 │   ├── evaluate.py
-│   ├── predict.py
-│   └── utils.py   (optional but recommended)
+│   └── predict.py           # Inference logic (NO fitting)
 │
-├── main.py   👈 ENTRY POINT
 ├── requirements.txt
 └── README.md
-
 ```
+
 ---
 
 ## ⚙️ How It Works
 
-1. User interacts with the platform
-2. ML model analyzes user behavior
-3. System predicts relevant products
-4. LLM generates human-like explanations
-5. Results are displayed in the UI
+### 🔹 Training Pipeline (`src/train.py`)
+
+1. Load raw data using `data_loader.py`
+2. Split data into train and test sets
+3. Fit preprocessing pipeline on **training data only**
+4. Train model using processed features
+5. Evaluate on test data
+6. Save:
+   - Trained model → `models/model.pkl`
+   - Preprocessing pipeline → `models/pipeline.pkl`
+
+👉 **Important:**
+- `.fit()` and `.fit_transform()` happen ONLY here
+- No inference logic is included
 
 ---
 
-## 🛠️ Setup Instructions
+### 🔹 Inference Pipeline (`src/predict.py`)
+
+1. Load saved model and pipeline
+2. Validate input data
+3. Apply `.transform()` (NOT `.fit_transform()`)
+4. Generate predictions using `.predict()`
+
+👉 **Important:**
+- NO training happens here
+- NO preprocessing fitting
+- Only uses saved artifacts
+
+---
+
+## ▶️ How to Run
+
+### 1️⃣ Setup Environment
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/NextBuy-AI.git
-
-# Navigate into the project
-cd NextBuy-AI
-```
-
-### Backend
-
-```bash
-cd backend
+python -m venv venv
+venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app:app --reload
 ```
 
-### Frontend
+---
+
+### 2️⃣ Run Training
 
 ```bash
-cd frontend
-npm install
-npm start
+python -m src.train
 ```
 
----
-
-## 🎯 Future Improvements
-
-* 🔍 Advanced recommendation algorithms
-* 📊 User analytics dashboard
-* ❤️ Real-time personalization
-* 📱 Mobile-friendly UI
+✔️ This will:
+- Train model
+- Save artifacts in `models/`
 
 ---
 
-## 🤝 Contributing
+### 3️⃣ Run Prediction
 
-Contributions are welcome!
-Feel free to fork the repo and submit a pull request.
+```bash
+python -m src.predict
+```
+
+✔️ This will:
+- Load saved model
+- Generate predictions on new data
 
 ---
 
-> Built to make shopping smarter, faster, and more personal.
+## 🧠 Key Design Principles
+
+* ✅ **Separation of Concerns**
+  - Data loading ≠ Training ≠ Inference
+
+* ✅ **No Data Leakage**
+  - Preprocessing is fitted only on training data
+
+* ✅ **Artifact Reuse**
+  - Model and pipeline are saved and reused
+
+* ✅ **Reproducibility**
+  - Same pipeline used in both training and prediction
+
+* ✅ **Independent Execution**
+  - Training and prediction scripts run separately
+
+---
+
+## ⚠️ Common Mistakes Avoided
+
+❌ Fitting preprocessing during prediction  
+❌ Retraining model during inference  
+❌ Mixing training and prediction logic  
+❌ Using test data during training  
+❌ Hardcoding logic in one file  
+
+---
+
+## 🎯 Project Objective
+
+To demonstrate how real-world ML systems should be built using:
+
+- Clean architecture
+- Modular design
+- Safe training vs inference separation
+
+---
+
+## 🏁 Summary
+
+**Training produces artifacts.**  
+**Inference consumes artifacts.**
+
+This project ensures both flows are **completely independent and production-safe**.
+
+---
+
+> Built as part of ML system design learning — focusing on correctness over complexity.
