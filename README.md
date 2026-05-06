@@ -33,19 +33,34 @@
 
 ```
 NextBuy-AI/
-│── backend/
-│   ├── app.py
-│   ├── model/
-│   └── routes/
 │
-│── frontend/
-│   ├── src/
-│   └── components/
+├── data/
+│   ├── raw/
+│   └── processed/
 │
-│── data/
-│── README.md
-```
+├── models/
+│   ├── model.pkl
+│   └── pipeline.pkl
+│
+├── backend/
+│
+├── frontend/
+│
+├── src/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── data_preprocessing.py
+│   ├── feature_engineering.py
+│   ├── train.py
+│   ├── evaluate.py
+│   ├── predict.py
+│   └── utils.py   (optional but recommended)
+│
+├── main.py   👈 ENTRY POINT
+├── requirements.txt
+└── README.md
 
+```
 ---
 
 ## ⚙️ How It Works
