@@ -1,3 +1,22 @@
+# Virtual Environment (Never upload this)
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Data (Keep raw data local)
+data/raw/
+
+# Model artifacts (Large files)
+*.pkl
+*.joblib
+
+# OS specific files
+.DS_Store
+Thumbs.db
 venv/
 __pycache__/
 *.pyc
