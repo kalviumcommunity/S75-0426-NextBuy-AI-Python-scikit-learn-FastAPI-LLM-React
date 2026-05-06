@@ -1,133 +1,93 @@
 # 🛒 NextBuy-AI
 
-**NextBuy-AI** is a personalized shopping recommendation system that helps users discover relevant products effortlessly. By combining machine learning with conversational AI, it predicts what users might want next and explains recommendations in a simple, human-friendly way.
+**NextBuy-AI** is a machine learning project built to demonstrate **clean architecture and proper separation of concerns** in ML systems.
+
+This project strictly separates:
+- Data Loading
+- Model Training
+- Inference (Prediction)
+
+The goal is not just building a model — but building a **reliable, reusable, and production-ready ML pipeline**.
 
 ---
 
 ## 🚀 Features
 
-* 🎯 **Personalized Recommendations**
-  Predicts products based on user behavior and preferences
+* 🎯 **Clear Separation of Concerns**
+  Data loading, training, and inference are implemented independently
 
-* 🧠 **ML-Powered Engine**
-  Uses machine learning to identify patterns and suggest relevant items
+* 🧠 **Proper ML Pipeline Design**
+  Preprocessing is fitted only during training and reused during prediction
 
-* 💬 **AI Shopping Assistant**
-  Explains *why* a product is recommended using natural language
+* 💾 **Artifact-Based Workflow**
+  Model and preprocessing pipeline are saved and reused
 
-* ⚡ **Fast & Scalable**
-  Built with a lightweight and efficient architecture
+* ⚡ **Independent Execution**
+  Training and prediction can run separately without dependency
 
 ---
 
 ## 🧱 Tech Stack
 
-* **Backend:** Python, FastAPI
+* **Language:** Python
 * **Machine Learning:** scikit-learn
-* **LLM:** OpenAI / OpenRouter
-* **Frontend:** React
+* **Environment:** venv (Virtual Environment)
 
 ---
 
 ## 📂 Project Structure
-
-```
-NextBuy-AI/
+project-root/
 │
 ├── data/
-│   ├── raw/
-│   └── processed/
+│ └── sample.csv
 │
-├── models/
-│   ├── model.pkl
-│   └── pipeline.pkl
+├── models/ # Saved artifacts (ignored in git)
 │
-├── backend/
-│
-├── frontend/
+├── reports/
 │
 ├── src/
-│   ├── __init__.py
-│   ├── config.py
-│   ├── data_preprocessing.py
-│   ├── feature_engineering.py
-│   ├── train.py
-│   ├── evaluate.py
-│   ├── predict.py
-│   └── utils.py   (optional but recommended)
+│ ├── init.py
+│ ├── config.py
+│ ├── data_loader.py
+│ ├── data_preprocessing.py
+│ ├── feature_engineering.py
+│ ├── train.py
+│ ├── evaluate.py
+│ └── predict.py
 │
-├── main.py   👈 ENTRY POINT
 ├── requirements.txt
 └── README.md
 
-```
+
 ---
 
 ## ⚙️ How It Works
 
-1. User interacts with the platform
-2. ML model analyzes user behavior
-3. System predicts relevant products
-4. LLM generates human-like explanations
-5. Results are displayed in the UI
+### 🔹 Training Pipeline (`src/train.py`)
+
+1. Load raw data using `data_loader.py`
+2. Split data into train and test sets
+3. Fit preprocessing pipeline on **training data only**
+4. Train model
+5. Evaluate on test data
+6. Save artifacts (`model.pkl`, `pipeline.pkl`)
+
+👉 `.fit()` happens ONLY here
 
 ---
 
-## 🛠️ Setup Instructions
+### 🔹 Inference Pipeline (`src/predict.py`)
+
+1. Load saved model + pipeline
+2. Apply `.transform()` (NOT `.fit_transform()`)
+3. Generate predictions
+
+👉 No training happens here
+
+---
+
+## ▶️ How to Run
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/NextBuy-AI.git
-
-# Navigate into the project
-cd NextBuy-AI
-```
-
-### Backend
-
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn app:app --reload
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
----
-
-## 🎯 Future Improvements
-
-* 🔍 Advanced recommendation algorithms
-* 📊 User analytics dashboard
-* ❤️ Real-time personalization
-* 📱 Mobile-friendly UI
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome!
-Feel free to fork the repo and submit a pull request.
-
----
-
-> Built to make shopping smarter, faster, and more personal.
-
-
-# NextBuy AI - ML Pipeline
-
-## Setup Instructions
-1. **Create Virtual Environment:** `python -m venv .venv`
-2. **Activate Environment:** `.\.venv\Scripts\Activate.ps1`
-3. **Install Dependencies:** `pip install -r requirements.txt`
-
-## Project Structure
-- `src/`: Modular Python scripts for the ML pipeline.
-- `data/`: Local data storage (ignored by Git).
-- `models/`: Saved model artifacts (.pkl files).
+python -m src.train
+python -m src.predict

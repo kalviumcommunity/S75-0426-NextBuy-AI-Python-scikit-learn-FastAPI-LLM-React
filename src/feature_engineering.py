@@ -1,7 +1,5 @@
-# src/feature_engineering.py
-
-from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 def build_pipeline():
     pipeline = Pipeline([

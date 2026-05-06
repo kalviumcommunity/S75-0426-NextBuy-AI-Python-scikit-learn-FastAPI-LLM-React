@@ -1,14 +1,14 @@
-# src/train.py
-
 import pickle
 from sklearn.ensemble import RandomForestClassifier
 
-from src.data_preprocessing import load_data, clean_data, split_data
+from src.data_loader import load_data
+from src.data_preprocessing import clean_data, split_data
 from src.feature_engineering import build_pipeline
-from src.config import MODEL_PATH, PIPELINE_PATH, RANDOM_STATE
+from src.config import DATA_PATH, MODEL_PATH, PIPELINE_PATH, RANDOM_STATE
+
 
 def train():
-    df = load_data()
+    df = load_data(DATA_PATH)
     df = clean_data(df)
 
     X_train, X_test, y_train, y_test = split_data(df)
@@ -28,3 +28,8 @@ def train():
         pickle.dump(pipeline, f)
 
     return model, pipeline, X_test, y_test
+
+
+if __name__ == "__main__":
+    train()
+    print("✅ Training completed and artifacts saved!")

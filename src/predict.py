@@ -1,6 +1,5 @@
-# src/predict.py
-
 import pickle
+import pandas as pd
 from src.config import MODEL_PATH, PIPELINE_PATH
 
 def load_artifacts():
@@ -12,10 +11,22 @@ def load_artifacts():
 
     return model, pipeline
 
-def predict(new_data):
+
+def predict(input_df: pd.DataFrame):
     model, pipeline = load_artifacts()
 
-    processed_data = pipeline.transform(new_data)  # ❗ ONLY transform
-    predictions = model.predict(processed_data)
+    # ✅ Ensure SAME columns as training
+    expected_cols = pipeline.feature_names_in_
 
-    return predictions
+    input_df = input_df[expected_cols]
+
+    processed = pipeline.transform(input_df)   # ❗ ONLY transform
+    preds = model.predict(processed)
+
+    return preds
+
+
+if __name__ == "__main__":
+    sample = pd.read_csv("data/sample.csv")
+    preds = predict(sample)
+    print("Predictions:", preds)
