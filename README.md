@@ -118,3 +118,16 @@ Feel free to fork the repo and submit a pull request.
 ---
 
 > Built to make shopping smarter, faster, and more personal.
+
+
+# NextBuy AI - ML Pipeline
+
+## Setup Instructions
+1. **Create Virtual Environment:** `python -m venv .venv`
+2. **Activate Environment:** `.\.venv\Scripts\Activate.ps1`
+3. **Install Dependencies:** `pip install -r requirements.txt`
+
+## Project Structure
+- `src/`: Modular Python scripts for the ML pipeline.
+- `data/`: Local data storage (ignored by Git).
+- `models/`: Saved model artifacts (.pkl files).
