@@ -289,3 +289,19 @@ This project demonstrates:
 ---
 
 > Built for ML system design learning with emphasis on correctness, reproducibility, and disciplined ML engineering.
+
+
+
+## Setup Instructions
+
+### Create Virtual Environment
+python -m venv .venv
+
+### Activate Environment
+.\.venv\Scripts\Activate
+
+### Install Dependencies
+pip install -r requirements.txt
+
+### Run Project
+python main.py
