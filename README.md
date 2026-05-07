@@ -1,66 +1,48 @@
 # 🛒 NextBuy-AI
 
-**NextBuy-AI** is a machine learning project built to demonstrate **clean architecture, proper separation of concerns, correct feature/target definition, data understanding, and leakage-free evaluation**.
+**NextBuy-AI** is a machine learning project built to demonstrate:
 
-This project strictly separates:
-- Data Loading
-- Model Training
-- Inference (Prediction)
+- Clean ML architecture
+- Proper feature and target definition
+- Feature type grouping
+- Feature distribution analysis
+- Leakage-free train-test splitting
+- Reproducible ML workflows
 
-It also ensures:
-- Clear **target variable definition**
-- Proper **feature selection**
-- **Zero data leakage**
-- **Feature distribution inspection before modeling**
-- **Correct train-test split for honest evaluation**
-
-The goal is not just building a model — but building a **reliable, reproducible, and production-ready ML pipeline**.
+The goal is not only to train a model, but to build a **production-ready and trustworthy ML pipeline**.
 
 ---
 
-## 🚀 Features
+# 🚀 Features
 
-* 🎯 **Separation of Concerns**  
-  Data loading, training, and inference are completely independent  
-
-* 🧠 **Explicit Feature Definition**  
-  Features are manually defined (no auto-selection)  
-
-* 🔒 **No Data Leakage**  
-  Target is never included in feature set  
-
-* 📊 **Feature Distribution Analysis (EDA)**  
-  Detects skewness, outliers, and imbalance before modeling  
-
-* ⚖️ **Proper Train-Test Split**  
-  Ensures realistic evaluation using unseen data  
-
-* 💾 **Artifact-Based Workflow**  
-  Model and preprocessing pipeline are saved and reused  
-
-* ⚡ **Independent Execution**  
-  Training and prediction run separately  
+- 🎯 Explicit target definition
+- 🔢 Manual numerical and categorical feature grouping
+- 🔒 Leakage prevention
+- 📊 Exploratory Data Analysis (EDA)
+- ⚖️ Proper train-test splitting
+- 💾 Artifact-based workflow
+- ⚡ Independent training and inference pipelines
 
 ---
 
-## 🧱 Tech Stack
+# 🧱 Tech Stack
 
-* **Language:** Python  
-* **Machine Learning:** scikit-learn  
-* **Visualization:** matplotlib  
-* **Environment:** venv  
+- Python
+- scikit-learn
+- pandas
+- matplotlib
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
-```
+```text
 project-root/
 │
 ├── data/
 │   └── sample.csv
 │
-├── models/                  # Saved artifacts (ignored in git)
+├── models/
 │   ├── model.pkl
 │   └── pipeline.pkl
 │
@@ -68,15 +50,15 @@ project-root/
 │
 ├── src/
 │   ├── __init__.py
-│   ├── config.py            # Feature + target definitions
-│   ├── data_loader.py       # ONLY loads raw data
+│   ├── config.py
+│   ├── data_loader.py
 │   ├── data_preprocessing.py
 │   ├── feature_engineering.py
-│   ├── data_split.py        # Train-test splitting logic
-│   ├── train.py             # Training logic
+│   ├── train.py
 │   ├── evaluate.py
-│   ├── predict.py           # Inference logic
-│   └── eda.py               # Feature distribution inspection
+│   ├── predict.py
+│   ├── eda.py
+│   └── leakage_demo.py
 │
 ├── requirements.txt
 └── README.md
@@ -84,188 +66,226 @@ project-root/
 
 ---
 
-## ⚙️ How It Works
+# 🎯 Feature and Target Definition
 
-### 🔹 EDA Pipeline (`src/eda.py`)
+## Target Variable
 
-1. Load dataset  
-2. Analyze numerical features:
-   - Summary statistics
-   - Skewness
-   - Histograms
-   - Boxplots  
-3. Analyze categorical features:
-   - Value counts
-   - Imbalance detection  
-4. Compare features with target  
-5. Identify:
-   - Outliers  
-   - Skewness  
-   - Useful features  
-
-👉 No model training or fitting happens here  
+| Property | Description |
+|---|---|
+| Target Column | `target` |
+| Problem Type | Classification |
+| Business Meaning | Predicts the final outcome based on input features |
 
 ---
 
-### 🔹 Data Splitting (`src/data_split.py`)
+# 🔢 Numerical Features
 
-1. Load dataset  
-2. Validate target and features  
-3. Separate:
-   - **X (features)**
-   - **y (target)**  
-4. Perform train-test split:
-   - 80% training
-   - 20% testing  
-5. Apply **stratification (for classification)**  
-6. Verify:
-   - Shapes
-   - Target distribution  
+| Feature | Reason |
+|---|---|
+| feature1 | Represents measurable numeric values |
+| feature2 | Continuous numeric quantity |
 
-👉 No preprocessing is applied before splitting  
-👉 Test set remains completely untouched  
+## Scaling Strategy
+
+Numerical features may be scaled using `StandardScaler` during preprocessing.
 
 ---
 
-### 🔹 Training Pipeline (`src/train.py`)
+# 🏷️ Categorical Features
 
-1. Load raw data  
-2. Split into train/test  
-3. Fit preprocessing pipeline on **training data only**  
-4. Train model  
-5. Evaluate performance  
-6. Save:
-   - `model.pkl`
-   - `pipeline.pkl`
+| Feature | Type | Reason |
+|---|---|---|
+| category1 | Nominal | Represents category labels without order |
 
-👉 `.fit()` and `.fit_transform()` happen ONLY here  
+## Encoding Strategy
 
----
-
-### 🔹 Inference Pipeline (`src/predict.py`)
-
-1. Load saved model and pipeline  
-2. Validate input data  
-3. Apply `.transform()` (NOT `.fit_transform()`)  
-4. Generate predictions  
-
-👉 No training happens here  
-👉 No preprocessing fitting  
+Categorical features may use:
+- One-Hot Encoding
+- Ordinal Encoding (if ordered categories exist)
 
 ---
 
-## ▶️ How to Run
+# ❌ Excluded Columns
+
+| Column | Reason Excluded |
+|---|---|
+| id | Unique identifier with no predictive value |
+| timestamp | Not available during real-world prediction |
+
+---
+
+# ⚠️ Edge Case Handling
+
+## Binary Features
+
+Binary columns stored as `0/1` are treated conceptually based on meaning, not storage type.
+
+## Ordinal Features
+
+Ordinal features are handled separately if category ordering matters.
+
+## High Cardinality Features
+
+High-cardinality categorical columns may require grouping or advanced encoding.
+
+## Timestamp Features
+
+Timestamp columns are excluded unless converted into meaningful features.
+
+---
+
+# 📊 Feature Distribution Analysis
+
+EDA is performed before modeling to understand feature behavior.
+
+## Numerical Inspection
+
+- Summary statistics
+- Histograms
+- Boxplots
+- Skewness analysis
+
+## Categorical Inspection
+
+- Value counts
+- Rare category detection
+- Imbalance analysis
+
+## Key Goals
+
+- Detect skewness
+- Detect outliers
+- Detect imbalance
+- Identify preprocessing requirements
+
+---
+
+# ⚖️ Data Splitting Strategy
+
+## Split Configuration
+
+| Setting | Value |
+|---|---|
+| Training Data | 80% |
+| Testing Data | 20% |
+| Random State | 42 |
+| Stratification | Enabled |
+
+---
+
+## Why This Strategy?
+
+- Training data is used for learning
+- Testing data simulates unseen real-world data
+- Stratification preserves class balance
+
+---
+
+# 🔒 Leakage Prevention
+
+The following precautions are implemented:
+
+- Target column excluded from features
+- ID columns excluded
+- No preprocessing before splitting
+- No scaling before splitting
+- No encoding before splitting
+- Test data remains untouched
+
+---
+
+# 🚨 Data Leakage Demonstration
+
+This project also demonstrates train-test contamination leakage.
+
+## Incorrect Workflow
+
+```python
+scaler.fit_transform(X)
+train_test_split(X_scaled, y)
+```
+
+This leaks test-set information into training.
+
+---
+
+## Correct Workflow
+
+```python
+train_test_split(X, y)
+
+scaler.fit(X_train)
+scaler.transform(X_test)
+```
+
+This preserves honest evaluation.
+
+---
+
+# ⚙️ ML Workflow
+
+## EDA Pipeline
 
 ```bash
-# Run EDA (Feature Inspection)
 python -m src.eda
+```
 
-# Run Data Split
-python -m src.data_split
+Performs:
+- Distribution analysis
+- Outlier detection
+- Skewness inspection
 
-# Train model
+---
+
+## Data Preprocessing
+
+```bash
+python -m src.data_preprocessing
+```
+
+Performs:
+- Validation
+- Feature separation
+- Train-test split
+
+---
+
+## Training Pipeline
+
+```bash
 python -m src.train
+```
 
-# Run prediction
+Performs:
+- Model training
+- Evaluation
+- Artifact saving
+
+---
+
+## Prediction Pipeline
+
+```bash
 python -m src.predict
 ```
 
----
-
-## 🎯 Feature and Target Definition
-
-- **Target Column:** Defined explicitly in `config.py`
-- **Problem Type:** (e.g., Binary Classification / Regression)
-
-### Feature Categories:
-- **Numerical Features:** Explicitly listed
-- **Categorical Features:** Explicitly listed
-
-### Excluded Columns:
-- IDs, irrelevant columns, or leakage-prone features
-
-### Leakage Prevention:
-- Target is NOT included in features
-- No future or derived data used
+Performs:
+- Artifact loading
+- Prediction generation
 
 ---
 
-## 📊 Feature Distribution Analysis
+# 🏁 Summary
 
-### Numerical Features:
-- Skewness checked using `.skew()`
-- Histograms used to inspect distribution
-- Boxplots used to detect outliers  
+This project demonstrates:
 
-### Categorical Features:
-- Value counts analyzed
-- Rare categories identified
-- Imbalance detected  
-
-### Key Observations:
-- Outliers identified in high-value ranges
-- Some features show skewness (may require transformation)
-- Certain categories dominate distribution  
-
-### Conclusion:
-- Data inspection performed **before modeling**
-- Transformations will be applied based on evidence  
+- Explicit feature definition
+- Correct feature typing
+- Data inspection before modeling
+- Leakage-free train-test splitting
+- Honest ML evaluation
+- Production-ready ML workflow design
 
 ---
 
-## 📊 Data Splitting Strategy
-
-- Split Ratio: **80% Training / 20% Testing**
-- Random State: **42 (for reproducibility)**
-- Stratification: **Used for classification problems**
-
-### Why This Strategy?
-
-- Training data is used to learn patterns  
-- Testing data simulates **real-world unseen data**  
-- Prevents model from memorizing  
-
-### Leakage Prevention:
-
-- No scaling before splitting  
-- No encoding before splitting  
-- No resampling before splitting  
-
-### Verification:
-
-- Checked shapes of training and testing sets  
-- Verified class distribution consistency  
-- Ensured reproducibility  
-
-### Key Principle:
-
-**Training learns. Testing evaluates. They must remain separate.**
-
----
-
-## ⚠️ Common Mistakes Avoided
-
-❌ Using target inside features  
-❌ Performing preprocessing before splitting  
-❌ Training on test data  
-❌ Ignoring class imbalance  
-❌ Skipping data inspection  
-❌ Mixing training and inference logic  
-
----
-
-## 🏁 Summary
-
-- Data is **understood before modeling**
-- Features and target are **explicitly defined**
-- Data is **split correctly before training**
-- Model training and inference are **fully separated**
-
-👉 **Training produces artifacts**  
-👉 **Inference consumes artifacts**  
-
-This ensures a **clean, reproducible, and production-ready ML system**
-
----
-
-> Built as part of ML system design learning — focusing on correctness, not shortcuts.
+> Built for ML system design learning with emphasis on correctness, reproducibility, and disciplined ML engineering.
