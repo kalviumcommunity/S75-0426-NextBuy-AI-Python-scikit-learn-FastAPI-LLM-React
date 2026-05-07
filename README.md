@@ -305,3 +305,17 @@ pip install -r requirements.txt
 
 ### Run Project
 python main.py
+
+# Baseline Model
+
+This project uses a baseline model using DummyClassifier with the strategy "most_frequent".
+
+The baseline model is compared against Logistic Regression using:
+
+- Accuracy
+- F1 Score
+- Classification Report
+
+Purpose:
+- Validate that the ML model performs better than naive predictions.
+- Measure actual improvement over a trivial baseline.
