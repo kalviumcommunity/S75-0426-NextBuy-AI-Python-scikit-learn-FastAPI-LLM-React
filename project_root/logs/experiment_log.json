@@ -1,0 +1,12 @@
+{
+  "baseline_model": {
+    "name": "DummyClassifier",
+    "strategy": "most_frequent"
+  },
+  "real_model": {
+    "name": "LogisticRegression"
+  },
+  "comparison": {
+    "purpose": "Compare baseline model with trained ML model"
+  }
+}
