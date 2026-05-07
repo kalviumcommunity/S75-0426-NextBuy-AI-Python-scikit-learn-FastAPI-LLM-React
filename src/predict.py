@@ -1,8 +1,16 @@
+# src/predict.py
+
 import pickle
 import pandas as pd
-from src.config import MODEL_PATH, PIPELINE_PATH
+
+from src.config import (
+    MODEL_PATH,
+    PIPELINE_PATH
+)
+
 
 def load_artifacts():
+
     with open(MODEL_PATH, "rb") as f:
         model = pickle.load(f)
 
@@ -13,20 +21,31 @@ def load_artifacts():
 
 
 def predict(input_df: pd.DataFrame):
+
+    # ===============================
+    # LOAD ARTIFACTS
+    # ===============================
     model, pipeline = load_artifacts()
 
-    # ✅ Ensure SAME columns as training
-    expected_cols = pipeline.feature_names_in_
+    print("\n✅ Model and Pipeline Loaded")
 
-    input_df = input_df[expected_cols]
+    # ===============================
+    # IMPORTANT:
+    # ONLY transform()
+    # NEVER fit_transform()
+    # ===============================
+    processed_data = pipeline.transform(input_df)
 
-    processed = pipeline.transform(input_df)   # ❗ ONLY transform
-    preds = model.predict(processed)
+    predictions = model.predict(processed_data)
 
-    return preds
+    return predictions
 
 
 if __name__ == "__main__":
+
     sample = pd.read_csv("data/sample.csv")
+
     preds = predict(sample)
-    print("Predictions:", preds)
+
+    print("\n📊 Predictions:")
+    print(preds)

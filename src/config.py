@@ -1,3 +1,5 @@
+# src/config.py
+
 # ==========================================
 # 🎯 TARGET COLUMN
 # ==========================================
@@ -7,8 +9,6 @@ TARGET_COLUMN = "target"
 # ==========================================
 # 🔢 NUMERICAL FEATURES
 # ==========================================
-# These features represent measurable quantities
-# where mathematical operations are meaningful.
 NUMERICAL_FEATURES = [
     "feature1",
     "feature2"
@@ -18,8 +18,6 @@ NUMERICAL_FEATURES = [
 # ==========================================
 # 🏷️ CATEGORICAL FEATURES
 # ==========================================
-# These features represent labels/categories
-# rather than continuous measurable values.
 CATEGORICAL_FEATURES = [
     "category1"
 ]
@@ -28,10 +26,6 @@ CATEGORICAL_FEATURES = [
 # ==========================================
 # ❌ EXCLUDED COLUMNS
 # ==========================================
-# Columns excluded because they are:
-# - identifiers
-# - leakage-prone
-# - unavailable during prediction
 EXCLUDED_COLUMNS = [
     "id",
     "timestamp"
@@ -39,10 +33,17 @@ EXCLUDED_COLUMNS = [
 
 
 # ==========================================
-# ⚙️ TRAIN-TEST SPLIT CONFIGURATION
+# ⚙️ TRAIN TEST CONFIGURATION
 # ==========================================
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
+
+
+# ==========================================
+# 💾 ARTIFACT PATHS
+# ==========================================
+MODEL_PATH = "models/model.pkl"
+PIPELINE_PATH = "models/pipeline.pkl"
 
 
 # ==========================================

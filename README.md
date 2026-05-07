@@ -1,35 +1,35 @@
 # 🛒 NextBuy-AI
 
-**NextBuy-AI** is a machine learning project built to demonstrate:
+NextBuy-AI is a machine learning project focused on:
 
-- Clean ML architecture
-- Proper feature and target definition
-- Feature type grouping
-- Feature distribution analysis
-- Leakage-free train-test splitting
-- Reproducible ML workflows
+- Leakage-free preprocessing
+- Proper normalization using MinMaxScaler
+- Clean ML pipeline architecture
+- Reproducible training workflows
+- Production-ready preprocessing pipelines
 
-The goal is not only to train a model, but to build a **production-ready and trustworthy ML pipeline**.
+The project demonstrates how to correctly normalize numerical features while preventing train-test contamination.
 
 ---
 
 # 🚀 Features
 
-- 🎯 Explicit target definition
-- 🔢 Manual numerical and categorical feature grouping
+- 🎯 Explicit feature and target definition
+- 🔢 Numerical feature normalization using MinMaxScaler
+- 🏷️ Separate handling of categorical features
 - 🔒 Leakage prevention
-- 📊 Exploratory Data Analysis (EDA)
 - ⚖️ Proper train-test splitting
-- 💾 Artifact-based workflow
-- ⚡ Independent training and inference pipelines
+- 💾 Saved preprocessing pipeline
+- 📊 Scaling verification
+- ⚡ Production-ready prediction workflow
 
 ---
 
 # 🧱 Tech Stack
 
 - Python
-- scikit-learn
 - pandas
+- scikit-learn
 - matplotlib
 
 ---
@@ -46,19 +46,13 @@ project-root/
 │   ├── model.pkl
 │   └── pipeline.pkl
 │
-├── reports/
-│
 ├── src/
-│   ├── __init__.py
 │   ├── config.py
 │   ├── data_loader.py
-│   ├── data_preprocessing.py
 │   ├── feature_engineering.py
 │   ├── train.py
-│   ├── evaluate.py
 │   ├── predict.py
-│   ├── eda.py
-│   └── leakage_demo.py
+│   └── evaluate.py
 │
 ├── requirements.txt
 └── README.md
@@ -66,118 +60,78 @@ project-root/
 
 ---
 
-# 🎯 Feature and Target Definition
+# 🎯 Feature Configuration
 
-## Target Variable
+## Target Column
 
-| Property | Description |
-|---|---|
-| Target Column | `target` |
-| Problem Type | Classification |
-| Business Meaning | Predicts the final outcome based on input features |
+```python
+TARGET_COLUMN = "target"
+```
 
 ---
 
-# 🔢 Numerical Features
+## Numerical Features
 
-| Feature | Reason |
-|---|---|
-| feature1 | Represents measurable numeric values |
-| feature2 | Continuous numeric quantity |
+```python
+NUMERICAL_FEATURES = [
+    "feature1",
+    "feature2"
+]
+```
 
-## Scaling Strategy
-
-Numerical features may be scaled using `StandardScaler` during preprocessing.
-
----
-
-# 🏷️ Categorical Features
-
-| Feature | Type | Reason |
-|---|---|---|
-| category1 | Nominal | Represents category labels without order |
-
-## Encoding Strategy
-
-Categorical features may use:
-- One-Hot Encoding
-- Ordinal Encoding (if ordered categories exist)
+These features are normalized using MinMaxScaler.
 
 ---
 
-# ❌ Excluded Columns
+## Categorical Features
 
-| Column | Reason Excluded |
-|---|---|
-| id | Unique identifier with no predictive value |
-| timestamp | Not available during real-world prediction |
+```python
+CATEGORICAL_FEATURES = [
+    "category1"
+]
+```
 
----
-
-# ⚠️ Edge Case Handling
-
-## Binary Features
-
-Binary columns stored as `0/1` are treated conceptually based on meaning, not storage type.
-
-## Ordinal Features
-
-Ordinal features are handled separately if category ordering matters.
-
-## High Cardinality Features
-
-High-cardinality categorical columns may require grouping or advanced encoding.
-
-## Timestamp Features
-
-Timestamp columns are excluded unless converted into meaningful features.
+Categorical features are encoded separately using OneHotEncoder.
 
 ---
 
-# 📊 Feature Distribution Analysis
+# 🔢 Why MinMaxScaler Was Chosen
 
-EDA is performed before modeling to understand feature behavior.
+MinMaxScaler was selected because:
 
-## Numerical Inspection
+- The model is sensitive to feature magnitudes
+- Features exist on different numerical scales
+- Normalization keeps all values within a fixed range
+- It improves optimization stability
 
-- Summary statistics
-- Histograms
-- Boxplots
-- Skewness analysis
+MinMaxScaler transforms features using:
 
-## Categorical Inspection
+```python
+x_scaled = (x - x_min) / (x_max - x_min)
+```
 
-- Value counts
-- Rare category detection
-- Imbalance analysis
+After transformation:
 
-## Key Goals
-
-- Detect skewness
-- Detect outliers
-- Detect imbalance
-- Identify preprocessing requirements
+- Minimum value becomes 0
+- Maximum value becomes 1
 
 ---
 
-# ⚖️ Data Splitting Strategy
+# ⚖️ Proper Train-Test Splitting
 
-## Split Configuration
+The dataset is split BEFORE preprocessing.
 
-| Setting | Value |
-|---|---|
-| Training Data | 80% |
-| Testing Data | 20% |
-| Random State | 42 |
-| Stratification | Enabled |
+```python
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+```
 
----
-
-## Why This Strategy?
-
-- Training data is used for learning
-- Testing data simulates unseen real-world data
-- Stratification preserves class balance
+This prevents test-set information from leaking into training.
 
 ---
 
@@ -185,93 +139,123 @@ EDA is performed before modeling to understand feature behavior.
 
 The following precautions are implemented:
 
-- Target column excluded from features
-- ID columns excluded
-- No preprocessing before splitting
-- No scaling before splitting
-- No encoding before splitting
-- Test data remains untouched
+- Train-test split BEFORE scaling
+- MinMaxScaler fitted ONLY on training data
+- Test data transformed using the SAME scaler
+- Target column excluded from preprocessing
+- Only numerical features scaled
+- Categorical features handled separately
+- transform() used during prediction
 
----
-
-# 🚨 Data Leakage Demonstration
-
-This project also demonstrates train-test contamination leakage.
-
-## Incorrect Workflow
+Incorrect approach:
 
 ```python
 scaler.fit_transform(X)
-train_test_split(X_scaled, y)
+train_test_split(X, y)
 ```
 
-This leaks test-set information into training.
-
----
-
-## Correct Workflow
+Correct approach:
 
 ```python
-train_test_split(X, y)
+X_train, X_test, y_train, y_test = train_test_split(X, y)
 
 scaler.fit(X_train)
 scaler.transform(X_test)
 ```
 
-This preserves honest evaluation.
-
 ---
 
-# ⚙️ ML Workflow
+# 🏗️ Preprocessing Pipeline
 
-## EDA Pipeline
+The project uses:
 
-```bash
-python -m src.eda
+- MinMaxScaler for numerical features
+- OneHotEncoder for categorical features
+- ColumnTransformer for clean preprocessing
+
+```python
+ColumnTransformer(
+    transformers=[
+        ("num", MinMaxScaler(), NUMERICAL_FEATURES),
+        ("cat", OneHotEncoder(), CATEGORICAL_FEATURES)
+    ]
+)
 ```
 
-Performs:
-- Distribution analysis
-- Outlier detection
-- Skewness inspection
+---
+
+# 📊 Scaling Verification
+
+After normalization:
+
+- Minimum training values ≈ 0
+- Maximum training values ≈ 1
+
+Verification logs are printed during training.
 
 ---
 
-## Data Preprocessing
+# 💾 Artifact Persistence
 
-```bash
-python -m src.data_preprocessing
+The trained model and preprocessing pipeline are saved using pickle.
+
+```python
+pickle.dump(model, open(MODEL_PATH, "wb"))
+pickle.dump(pipeline, open(PIPELINE_PATH, "wb"))
 ```
 
-Performs:
-- Validation
-- Feature separation
-- Train-test split
+---
+
+# ⚡ Prediction Workflow
+
+During inference:
+
+- Saved pipeline is loaded
+- ONLY transform() is used
+- fit() or fit_transform() is NEVER used
+
+```python
+processed = pipeline.transform(input_df)
+predictions = model.predict(processed)
+```
+
+This guarantees preprocessing consistency between training and prediction.
 
 ---
 
-## Training Pipeline
+# ⚠️ Outlier Consideration
+
+Numerical feature distributions were inspected during EDA.
+
+Observations:
+
+- No severe outliers detected
+- MinMaxScaler considered acceptable
+- Features left unchanged
+
+If severe outliers appear in future datasets:
+
+- RobustScaler
+- Log transformation
+- Outlier capping
+
+may be considered.
+
+---
+
+# ▶️ Run Training
 
 ```bash
 python -m src.train
 ```
 
-Performs:
-- Model training
-- Evaluation
-- Artifact saving
-
 ---
 
-## Prediction Pipeline
+# ▶️ Run Prediction
 
 ```bash
 python -m src.predict
 ```
-
-Performs:
-- Artifact loading
-- Prediction generation
 
 ---
 
@@ -279,13 +263,13 @@ Performs:
 
 This project demonstrates:
 
-- Explicit feature definition
-- Correct feature typing
-- Data inspection before modeling
-- Leakage-free train-test splitting
-- Honest ML evaluation
-- Production-ready ML workflow design
+- Proper normalization using MinMaxScaler
+- Leakage-free preprocessing
+- Correct train-test boundaries
+- Clean ML pipeline architecture
+- Reproducible preprocessing
+- Production-ready prediction workflow
 
 ---
 
-> Built for ML system design learning with emphasis on correctness, reproducibility, and disciplined ML engineering.
+Built for disciplined ML engineering and preprocessing best practices.
