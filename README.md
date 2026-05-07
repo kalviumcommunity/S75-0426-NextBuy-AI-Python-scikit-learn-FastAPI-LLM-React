@@ -319,3 +319,37 @@ The baseline model is compared against Logistic Regression using:
 Purpose:
 - Validate that the ML model performs better than naive predictions.
 - Measure actual improvement over a trivial baseline.
+
+
+# Linear Regression ML Project
+
+## Steps Performed
+
+- Created baseline model
+- Trained Linear Regression model
+- Compared performance metrics
+- Evaluated using:
+  - MSE
+  - RMSE
+  - MAE
+  - R2 Score
+
+## Run Project
+
+```bash
+python src/train.py
+
+
+
+---
+
+# Step 12 — Git Commands
+
+Now save everything.
+
+---
+
+## Check status
+
+```powershell
+git status

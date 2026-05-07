@@ -1,78 +1,64 @@
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.dummy import DummyClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report, f1_score
+from sklearn.linear_model import LinearRegression
+from sklearn.dummy import DummyRegressor
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import numpy as np
 
-# Load dataset
-data = load_iris()
+from src.data_preprocessing import load_and_split_data
+from src.persistence import save_model
 
-X = data.data
-y = data.target
+# Load data
+X_train, X_test, y_train, y_test = load_and_split_data()
 
-# Train test split
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.2,
-    random_state=42,
-    stratify=y
-)
+# -------------------------
+# Baseline Model
+# -------------------------
 
-# =========================
-# BASELINE MODEL
-# =========================
-
-baseline = DummyClassifier(strategy="most_frequent")
+baseline = DummyRegressor(strategy="mean")
 
 baseline.fit(X_train, y_train)
 
-baseline_preds = baseline.predict(X_test)
+baseline_predictions = baseline.predict(X_test)
 
-baseline_accuracy = accuracy_score(y_test, baseline_preds)
+# -------------------------
+# Linear Regression Model
+# -------------------------
 
-baseline_f1 = f1_score(
-    y_test,
-    baseline_preds,
-    average="weighted"
-)
-
-# =========================
-# REAL MODEL
-# =========================
-
-model = LogisticRegression(max_iter=1000)
+model = LinearRegression()
 
 model.fit(X_train, y_train)
 
-model_preds = model.predict(X_test)
+model_predictions = model.predict(X_test)
+save_model(model, "models/linear_regression.pkl")
 
-model_accuracy = accuracy_score(y_test, model_preds)
+# -------------------------
+# Evaluation Function
+# -------------------------
 
-model_f1 = f1_score(
+def evaluate_model(name, y_true, y_pred):
+
+    mse = mean_squared_error(y_true, y_pred)
+    rmse = np.sqrt(mse)
+    mae = mean_absolute_error(y_true, y_pred)
+    r2 = r2_score(y_true, y_pred)
+
+    print(f"\n{name}")
+    print(f"MSE  : {mse:.2f}")
+    print(f"RMSE : {rmse:.2f}")
+    print(f"MAE  : {mae:.2f}")
+    print(f"R2   : {r2:.2f}")
+
+# -------------------------
+# Results
+# -------------------------
+
+evaluate_model(
+    "Baseline Model",
     y_test,
-    model_preds,
-    average="weighted"
+    baseline_predictions
 )
 
-# =========================
-# RESULTS
-# =========================
-
-print("\n===== BASELINE MODEL =====")
-print("Accuracy:", baseline_accuracy)
-print("F1 Score:", baseline_f1)
-
-print("\n===== LOGISTIC REGRESSION =====")
-print("Accuracy:", model_accuracy)
-print("F1 Score:", model_f1)
-
-print("\n===== IMPROVEMENT =====")
-print("Accuracy Improvement:", model_accuracy - baseline_accuracy)
-print("F1 Improvement:", model_f1 - baseline_f1)
-
-print("\n===== BASELINE REPORT =====")
-print(classification_report(y_test, baseline_preds))
-
-print("\n===== MODEL REPORT =====")
-print(classification_report(y_test, model_preds))
+evaluate_model(
+    "Linear Regression Model",
+    y_test,
+    model_predictions
+)
